@@ -17,6 +17,7 @@ def run():
             print("Login failed, cannot validate")
             return
 
+        
         md = (("authorization", f"Bearer {token}"),)
         v = stub.Validate(auth_pb2.ValidateReq(), metadata=md)
         print("Validate response:", v)

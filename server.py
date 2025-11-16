@@ -1,6 +1,8 @@
 import os
 from concurrent import futures
-from datetime import datetime, timedelta
+import datetime
+from datetime import timedelta
+
 
 import grpc
 import auth_pb2
@@ -20,10 +22,11 @@ pwd_ctx = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 USER_STORE = {}
 
 def create_token(username: str) -> str:
+    now = datetime.datetime.now(datetime.timezone.utc)
     payload = {
         "sub": username,
-        "iat": datetime.now(datetime.timezone.utc),
-        "exp": datetime.now(datetime.timezone.utc) + timedelta(minutes=JWT_EXP_MINUTES)
+        "iat": now,
+        "exp": now + timedelta(minutes=JWT_EXP_MINUTES),
     }
     token = jwt.encode(payload, JWT_SECRET, algorithm = JWT_ALGORITHM)
     return token
@@ -89,7 +92,7 @@ class AuthServicer(auth_pb2_grpc.AuthServicer):
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     auth_pb2_grpc.add_AuthServicer_to_server(AuthServicer(), server)
-    serve.add_insecure_port('[::]:50051')
+    server.add_insecure_port('[::]:50051')
     server.start()
     print("Auth gRPC server running on port 50051")
     server.wait_for_termination()

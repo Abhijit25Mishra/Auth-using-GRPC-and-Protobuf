@@ -14,7 +14,7 @@ message RegisterReq{
 
 message LoginReq{
     string username = 1;
-    string passwrod = 2;
+    string password = 2;
 }
 
 message ValidateReq{
